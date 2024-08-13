@@ -17,3 +17,22 @@ pip3 install -r requirements.txt
 
 ### Generating realizations from BNN priors 
 
+Currently, the code support one- and two-dimensional BNN priors with network parameters drawn from either Gaussian (smooth) or Cauchy (piecewise constant) distribution.
+Realisations from BNN priors can be visualized by running: 
+```shell
+python3 generate_prior.py -d <distribution> -di <input_dimension>
+```
+Options for `<distribution>` are `gaussian` or `cauchy`. Options for `<input_dimension>` are `1` (one-dimensional realisations, corresponding to signals) or `2` (two-dimensional realisations, corresponding to images).
+
+Note: to check the comand line arguments and available choice for them, you can use `-h` option when calling the programm:
+```shell
+python3 generate_prior.py -h
+```
+
+For example, after running 
+```shell
+python3 generate_prior.py -d gaussian -di 1
+```
+the figures showing different one-dimensional realisations of Gaussian BNN priors (for various numbers of hidden layers and hidden units) will be saved to the directory named `./figures/priors/`. 
+
+
