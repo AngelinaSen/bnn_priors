@@ -1,15 +1,9 @@
 import numpy as np
 import torch
 import enum
-import logging
 
-from typing import List
-
-# import torch.nn as nn
-from torch.autograd.function import once_differentiable
 import matplotlib
-import matplotlib.pyplot as plt
-from bnn.bnn_utils import DistributionType, Layers, BNNParameterScale
+from bnn.bnn_utils import Layers
 
 
 # to make LaTeX-style plots
@@ -40,14 +34,16 @@ class BayesianNeuralNet(torch.nn.Module):
         weights_ind_pointers = layers.get_weights_partition
         biases_ind_pointers = layers.get_relative_biases_partition
 
+        # number of hidden layers + 1
         self.num_transforms = layers.num_transforms
 
-        # create parameters
+        # initialize parameters
         self.bnn_params = torch.nn.ParameterDict()
 
         # activation function
         self.act_func_type = act_func_type
 
+        # number of units in hidden layers
         layers_dims = layers.values
 
         for jj in range(self.num_transforms):
@@ -64,6 +60,17 @@ class BayesianNeuralNet(torch.nn.Module):
             self.bnn_params[f"biases_{jj + 1}"] = torch.nn.Parameter(biases_jj)
 
     def forward(self, x_input):
+
+        """
+        Function performing the forward pass for NN
+        # Note: we do not incorporate  weight scaling to the NN formulation,
+        # instead we scale weights separately in the outer function,
+        # so the input weights for this function are assumed to be scaled  already
+        # using the scale_limit  =  1 / (number_of_hidden_units)^{1/alpha},
+        # where alpha = 1 for Cauchy and alpha = 2 for Gaussian
+        :param x_input: space discretisation
+        :return: output of the NN
+        """
 
         # input layer
         f = x_input
@@ -88,16 +95,5 @@ class BayesianNeuralNet(torch.nn.Module):
                 act = activation(f)
                 h = weights.mm(act)
                 f = h + biases
-
-        # w = torch.flatten(f)
-        # plt.figure()
-        # plt.plot(w.detach().view(-1))
-        # plt.show()
-
-        # Note: we do not incorporate  weight scaling to the NN formulation,
-        # instead we scale weights separately in the outer function,
-        # so the input weights for this function are assumed to be scaled  already
-        # using the scale_limit  =  1 / (number_of_hidden_units)^{1/alpha},
-        # where alpha = 1 for Cauchy and alpha = 2 for Gaussian
 
         return f
