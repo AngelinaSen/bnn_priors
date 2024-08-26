@@ -6,11 +6,19 @@ from typing import List, Callable, Optional, Tuple
 import matplotlib.pyplot as plt
 
 
+class ParamStdDistr(str, enum.Enum):
+    """
+    Specifies how we define initial scales for the network weights and biases:
+    "exp": we sample scales from the exponential distribution
+    "constant": scales are fixed and =1
+    """
+    exp = "exp"
+    const = "const"
+
+
 class DistributionType(str, enum.Enum):
     CAUCHY = "cauchy"
     GAUSSIAN = "gaussian"
-    CAUCHY_GAUSSIAN = "cauchy-gaussian"  # Cauchy hidden weights/biases & Gaussian hidden-to-output weights
-    GAUSSIAN_CAUCHY = "gaussian-cauchy"  # Gaussian hidden weights/biases & Cauchy hidden-to-output weights
 
 
 ALPHA = {
@@ -375,38 +383,3 @@ def get_limit_scaling(layers: Layers, alpha: float) -> np.ndarray:
     return limit_scaling
 
 
-class PartiallyStochastic:
-    def __init__(self, layers: Layers, stoch_frac: float, theta_map):
-        """
-        Class initializer
-        :param layers: sets the structure of the BNN
-        :param stoch_frac: fraction of stochastic parameters
-        """
-        self.total_param_dim = layers.param_vector_dimension
-        if stoch_frac < 0 or stoch_frac > 1:
-            raise ValueError("Stochastic fraction should be between 0 and 1")
-        else:
-            self.stoch_frac = stoch_frac
-        self.num_inferred = int(self.stoch_frac * self.total_param_dim)
-        self.num_fixed = self.total_param_dim - self.num_inferred
-        self.inferred_indices, self.fixed_indices = self.set_params_for_part_stochastic
-        self.theta_fixed = theta_map[self.fixed_indices]
-
-    @property
-    def set_params_for_part_stochastic(self) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Defines (randomly) which parameters are going to be stochastic and which --- fixed
-        :return: indices of the parameters that will be inferred  and indices of parameters that will be fixed to MAP
-        """
-
-        # define which indices are inferred
-        inferred_indices = np.sort(
-            np.random.choice(np.arange(0, self.total_param_dim), self.num_inferred, replace=False)
-        )
-
-        # set up the indices of the parameters that will be fixed
-        # as the set difference between indices of all parameter and those that will be inferred
-        all_indices = np.arange(0, self.total_param_dim)
-        fixed_indices = np.setdiff1d(all_indices, inferred_indices)
-
-        return inferred_indices, fixed_indices
