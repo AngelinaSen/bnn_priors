@@ -115,7 +115,7 @@ def main():
         os.makedirs(fig_path)
 
     # MAP estimate file name
-    map_file_name = fig_path + "map_estimates.pkl"
+    map_file_name = res_path + "map_estimates.pkl"
 
     # load observations from a  file
     data_file_name = DATA_PATH_CONST + f"{signal_type.value}_m_{N_DATA}_n_{N_DISCR}_{NOISE.value}.pkl"
@@ -199,7 +199,7 @@ def main():
     print(f"MAP estimate is saved to: {map_file_name}")
 
     # plot true solution with MAP estimate
-    plot_map_s(obs_data, u_map_s, [LOWER_BOUND, UPPER_BOUND], res_path)
+    plot_map_s(obs_data, u_map_s, [LOWER_BOUND, UPPER_BOUND], fig_path)
 
     plt.show()
 
