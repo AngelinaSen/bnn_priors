@@ -41,8 +41,8 @@ the figures showing different one-dimensional realisations of Gaussian BNN prior
 
 We solve an inverse problem of recovering the unknown signal from its noisy convolved measurement data. We have two test problems: the sharp (piecewise constant) signal and smooth signal. 
 
-<div>
-  <img width="70%" src="repo_images/deconv_1d_problem.png" alt="Signal deconvolution problem" title="Signal deconvolution problem: sharp signal (left) and smooth signal (right)">
+<div align="center">
+  <img width="80%" src="repo_images/deconv_1d_problem.png" alt="Signal deconvolution problem" title="Signal deconvolution problem: sharp signal (left) and smooth signal (right)">
 </div>
 
 The solution to the problem can be obtained via: 
